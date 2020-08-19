@@ -3,7 +3,16 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import * as yup from 'yup'
 
-function Form() {
+function Form(props) {
+    const {
+        checkboxChange, 
+        inputChange, 
+        submit, 
+        values, 
+        disabled, 
+        errors,
+    } = props
+//don't forget to add errors
 
 const onSubmit = evt => {
     evt.preventDefault()
@@ -12,7 +21,7 @@ const onSubmit = evt => {
 
 const onCheckboxChange = evt => {
     const { name, checked } = evt.target
-    onCheckboxChange(name, checked) // need to add to prop
+    checkboxChange(name, checked) // need to add to prop
 }
 
 const onInputChange = evt => {
@@ -21,40 +30,55 @@ const onInputChange = evt => {
 }
 
 return(
-    <form>
+    <form onSubmit={onSubmit}>
         <div>
             <div>
                 <label>Name
                     <input
                     value={values.name}
-                    onChange={''}
+                    onChange={onInputChange}
                     name='name'
                     type='text'
                     />
                 </label>
             </div>
 
-            {/* <div>
+            <div>
                 <label>Email
-                    <input/>
+                    <input
+                    value={values.email}
+                    onChange={onInputChange}
+                    name='email'
+                    type='email'
+                    />
                 </label>
             </div>
 
             <div>
                 <label>Password
-                    <input/>
+                    <input
+                        value={values.password}
+                        onChange={onInputChange}
+                        name='password'
+                        type='password'
+                        />
                 </label>
             </div>
 
             <div>
                 <label>Terms of Service
-                    <input/>
+                    <input
+                        checked={values.termsOfService}
+                        onChange={onInputChange}
+                        name='termsOfService'
+                        type='checkbox'
+                        />
                 </label>
-            </div> */}
+            </div>
 
             <div>
-                <button>Submit</button> 
-                {/* need to disable */}
+                <button >Submit</button> 
+                {/* need to disable disabled={disabled}*/}
             </div>
         </div>
     </form>

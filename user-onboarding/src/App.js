@@ -39,14 +39,59 @@ function App() {
       })
   }
 
-  const sendUsers = () => {
+  const postUsers = newUser => {
+    axios.post('https://reqres.in/api/users', newUser)
+      .then(res => {
+        debugger
+        setUsers([...users, res.data])
+      })
+      .catch(err => {
+        console.log(err, 'error')
+      })
+      .finally(() => {
+        setFormValues(initialFormValues)
+      })
+  }
+
+  const inputChange = (name, value) => {
+    //yup to go here
+
+    setFormValues({
+      ...formValues,
+      [name]: value,
+    })
+  }
+
+  const checkboxChange = (name, checked) => {
+    setFormValues({
+      ...formValues,
+      [name]: checked,
+    })
+  }
+
+  const submit = evt => {
+    const newUser = {
+      name: formValues.name.trim(),
+      email: formValues.email.trim(),
+      password: formValues.password.trim(),
+      termsOfService: formValues.termsOfService, // to edit
+    }
+
+    postUsers(newUser);
 
   }
 
   return (
     <div className="App">
       <header className="App-header"><h1>User Onboarding</h1>
-      <Form /> 
+      <Form 
+      checkboxChange={checkboxChange}
+      inputChange={inputChange}
+      submit={submit}
+      values={formValues}
+      disabled={disabled}
+      errors={formErrors}
+      /> 
       </header>
     </div>
   );
