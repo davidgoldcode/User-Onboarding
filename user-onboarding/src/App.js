@@ -1,14 +1,28 @@
 import React, { useState, useEffect } from 'react'
-// import formSchema from '../validation/formSchema'
 import axios from 'axios'
 import * as yup from 'yup'
+import schema from './validation/schema'
 import Form from './Form'
+import User from './User'
+import styled from 'styled-components'
+
+const StyledDiv = styled.div`
+  text-align: ${props => props.theme.textAlign};
+  font-family: ${props => props.theme.fontFamily};
+  background-color: ${props => props.theme.backgroundColor};
+  color: ${props => props.theme.color}
+`
 
 const initialFormValues = {
   name: '',
   email: '',
   password: '',
   termsOfService: false,
+  role: {
+    engineer: false,
+    productManager: false,
+    uiDesigner: false,
+  } 
 }
 
 const initialFormErrors = {
@@ -16,7 +30,8 @@ const initialFormErrors = {
   email: '',
   password: '',
   termsOfService: '',
-}
+  role: '',
+  } 
 
 const initialUsers = [];
 const initialDisabled = true;
@@ -31,7 +46,8 @@ function App() {
     axios.get('https://reqres.in/api/users')
       .then(res => {
         debugger
-        setUsers(res.data)
+        let arr = res.data.data
+        setUsers([...users, ...arr])
       })
       .catch(err => {
         debugger
@@ -44,6 +60,7 @@ function App() {
       .then(res => {
         debugger
         setUsers([...users, res.data])
+        console.log(users)
       })
       .catch(err => {
         console.log(err, 'error')
@@ -54,7 +71,21 @@ function App() {
   }
 
   const inputChange = (name, value) => {
-    //yup to go here
+    yup
+      .reach(schema, name)
+      .validate(value)
+      .then(success => {
+        setFormErrors({
+          ...formErrors,
+          [name]: "",
+          })
+        })
+      .catch(err => {
+        setFormErrors({
+          ...formErrors, 
+          [name]: err.errors[0],
+        })
+      })
 
     setFormValues({
       ...formValues,
@@ -70,19 +101,33 @@ function App() {
   }
 
   const submit = evt => {
+    debugger
     const newUser = {
       name: formValues.name.trim(),
       email: formValues.email.trim(),
       password: formValues.password.trim(),
-      termsOfService: formValues.termsOfService, // to edit
+      termsOfService: formValues.termsOfService,
+      role: formValues.role,
     }
 
+    console.log(newUser)
+    
     postUsers(newUser);
-
   }
 
+  useEffect(() => {
+    getUsers()
+  }, [])
+
+  useEffect(() => {
+    schema.isValid(formValues)
+      .then(valid => {
+        setDisabled(!valid);
+      })
+  }, [formValues])
+
   return (
-    <div className="App">
+    <StyledDiv>
       <header className="App-header"><h1>User Onboarding</h1>
       <Form 
       checkboxChange={checkboxChange}
@@ -92,8 +137,17 @@ function App() {
       disabled={disabled}
       errors={formErrors}
       /> 
+
+      {
+        users.map(x => {
+          return (
+          <User key={x.name} user={x}/>
+          )
+        })
+      }
+
       </header>
-    </div>
+    </StyledDiv>
   );
 }
 

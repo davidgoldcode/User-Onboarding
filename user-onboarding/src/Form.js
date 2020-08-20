@@ -69,7 +69,7 @@ return(
                 <label>Terms of Service
                     <input
                         checked={values.termsOfService}
-                        onChange={onInputChange}
+                        onChange={onCheckboxChange}
                         name='termsOfService'
                         type='checkbox'
                         />
@@ -77,8 +77,22 @@ return(
             </div>
 
             <div>
-                <button >Submit</button> 
-                {/* need to disable disabled={disabled}*/}
+                <label>Role
+                    <select
+                    onChange={onInputChange}
+                    value={values.role}
+                    name="role"
+                    >
+                        <option value=''>- Select an option -</option>
+                        <option value="engineer">Engineer</option>
+                        <option value="productManager">Product Manager</option>
+                        <option value="uiDesigner">UI Designer</option>
+                    </select>
+                </label>
+            </div>
+
+            <div>
+                <button disabled={disabled}>Submit</button> 
             </div>
         </div>
     </form>
